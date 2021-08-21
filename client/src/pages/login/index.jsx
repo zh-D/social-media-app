@@ -55,7 +55,7 @@ function Login() {
             <span className="loginForgot">Forgot Password?</span>
             <button className="loginRegisterButton" disabled={isFetching}>
               {isFetching ? (
-                <CircularProgress color="white" size="20px" />
+                <CircularProgress color="secondary" size="20px" />
               ) : (
                 "Create a New Account"
               )}
