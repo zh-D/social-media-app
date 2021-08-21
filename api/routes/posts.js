@@ -1,5 +1,6 @@
 const router = require("express").Router()
 const Post = require("../models/Post")
+const User = require("../models/User")
 
 // create a post
 router.post("/", async (req, res) => {
@@ -81,6 +82,7 @@ router.get("/timeline/:userId", async (req, res) => {
         );
         res.status(200).json(userPosts.concat(...friendPosts));
     } catch (err) {
+        console.log(err);
         res.status(500).json(err);
     }
 });
