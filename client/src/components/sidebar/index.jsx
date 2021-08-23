@@ -10,10 +10,24 @@ import {
   School,
   Chat,
 } from "@material-ui/icons";
-import { Users } from "../../dummyData";
+// import { Users } from "../../dummyData";
 import CloseFriend from "../closeFriend";
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import axios from "axios"
 
 function Sidebar() {
+  const { user } = useContext(AuthContext);
+  const [friendList, setFriendList] = useState([]);
+
+  useEffect(() => {
+    const fetchFriendList = async () => {
+      const res = await axios.get(`/users/friends/${user._id}`);
+      setFriendList(res.data);
+    };
+    fetchFriendList();
+  }, [user._id]);
+
   return (
     <div className="sidebar">
       <div className="sidebarWrapper">
@@ -58,9 +72,9 @@ function Sidebar() {
         <button className="sidebarButton">Show More</button>
         <hr className="sidebarHr" />
         <ul className="sidebarFriendList">
-          {Users.map((u) => (
-            <CloseFriend key={u.id} user={u} />
-          ))}
+          {friendList.length !== 0?friendList.map((u) => (
+            <CloseFriend key={u._id} user={u} />
+          )): "You have no friends in this list, just following them~"}
         </ul>
       </div>
     </div>

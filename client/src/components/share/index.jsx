@@ -10,7 +10,7 @@ import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 
-export default function Share() {
+export default function Share({ addPost }) {
   const { user } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const desc = useRef();
@@ -31,12 +31,18 @@ export default function Share() {
       console.log(newPost);
       try {
         await axios.post("/upload", data);
-      } catch (err) {}
+      } catch (err) {
+        console.log(err);
+      }
     }
     try {
-      await axios.post("/posts", newPost);
-      window.location.reload();
-    } catch (err) {}
+      const newP = await axios.post("/posts", newPost);
+      setFile(null);
+      desc.current.value = "";
+      addPost(newP.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
