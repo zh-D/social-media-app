@@ -56,6 +56,6 @@ app.use("/api/posts", postRoute)
 app.use("/api/conversations", conversationsRoute)
 app.use("/api/messages", messagesRoute)
 
-app.listen(8080, () => {
+app.listen(9001, () => {
     console.log("Backend server is running!");
 })
