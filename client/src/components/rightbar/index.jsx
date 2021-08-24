@@ -17,14 +17,18 @@ export default function Rightbar({ user }) {
 
   useEffect(() => {
     setFollowed(currentUser.followings.includes(user?._id));
-  }, [user]);
+  }, [user, currentUser.followings]);
 
   useEffect(() => {
     const getFriends = async () => {
       try {
-        const friendList = await axios.get(`/users/friends/${user._id}`);
-        setFriends(friendList.data);
-      } catch (error) {}
+        if (user && user._id) {
+          const friendList = await axios.get(`/users/friends/${user._id}`);
+          setFriends(friendList.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     getFriends();
@@ -110,8 +114,9 @@ export default function Rightbar({ user }) {
               <Link
                 to={`/profile/${friend.username}`}
                 style={{ textDecoration: "none" }}
+                key={friend.username}
               >
-                <div className="rightbarFollowing" key={friend.username}>
+                <div className="rightbarFollowing">
                   <img
                     src={
                       friend.profilePicture

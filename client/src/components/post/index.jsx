@@ -1,3 +1,4 @@
+import React from "react";
 import "./post.css";
 import { MoreVert } from "@material-ui/icons";
 // import { Users } from "../../dummyData";
@@ -6,8 +7,9 @@ import axios from "axios";
 import { format } from "timeago.js";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { Menu, MenuItem } from "@material-ui/core";
 
-export default function Post({ post }) {
+export default function Post({ post, deleteHandler }) {
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
@@ -16,7 +18,7 @@ export default function Post({ post }) {
 
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser._id));
-  }, [currentUser._id]);
+  }, [currentUser._id, post]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,13 +28,56 @@ export default function Post({ post }) {
     fetchUser();
   }, [post.userId]);
 
-  const likeHandler = () => {
+  const likeHandler = async () => {
     try {
-      axios.put(`/posts/${post._id}/like`, { userId: currentUser._id });
-    } catch (error) {}
-    setLike(isLiked ? like - 1 : like + 1);
-    setIsLiked(!isLiked);
+      await axios.put(`/posts/${post._id}/like`, { userId: currentUser._id });
+      setLike(isLiked ? like - 1 : like + 1);
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const MoreVertMenu = ({ deleteHandler }) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    return (
+      <div>
+        <MoreVert
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          onClick={handleClick}
+        />
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem
+            onClick={() => {
+              deleteHandler();
+              handleClose();
+            }}
+          >
+            delete
+          </MenuItem>
+          <MenuItem onClick={handleClose}>My account</MenuItem>
+          <MenuItem onClick={handleClose}>Logout</MenuItem>
+        </Menu>
+      </div>
+    );
+  };
+
   return (
     <div className="post">
       <div className="postWrapper">
@@ -53,12 +98,12 @@ export default function Post({ post }) {
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
           <div className="postTopRight">
-            <MoreVert />
+            <MoreVertMenu deleteHandler={() => deleteHandler(post._id)} />
           </div>
         </div>
         <div className="postCenter">
           <span className="postText">{post?.desc}</span>
-          <img className="postImg" src={PF + post.img} alt="" />
+          {post.img && <img className="postImg" src={PF + post.img} alt="" />}
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">
